@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'TextRecognitionService.dart';
 import 'A4FService.dart';
+import 'QuizParser.dart';
+import 'QuizScreen.dart';
+import 'models/question.dart';
 
 void main() {
   runApp(const MyApp());
@@ -85,11 +88,22 @@ class _HomePageState extends State<HomePage> {
 
     try {
       final mcqs = await _a4f.generateMCQs(_extractedText);
+       print("Raw MCQ text:\n$mcqs"); 
+      final questions = QuizParser.parseMCQs(mcqs);
+
       setState(() {
         _mcqs = mcqs.trim();
         _loading = false;
         _mcqGenerated = true;
       });
+
+      // Navigate to quiz
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QuizScreen(questions: questions),
+        ),
+      );
     } catch (e) {
       setState(() {
         _mcqs = '❌ Error generating MCQs: $e';
@@ -118,6 +132,7 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   backgroundColor: Colors.deepPurple,
+                  foregroundColor: Colors.white,
                 ),
               ),
               ElevatedButton.icon(
@@ -128,6 +143,7 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   backgroundColor: Colors.deepPurple,
+                  foregroundColor: Colors.white,
                 ),
               ),
             ],
@@ -178,6 +194,7 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    foregroundColor: Colors.white,
                   ),
                 ),
               ),
